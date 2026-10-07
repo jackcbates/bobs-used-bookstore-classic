@@ -4,7 +4,7 @@
 }
 
 <div class="panel-body">
-    @Html.Partial("_Notification")
+    <partial name="_Notification" />
 
     <h2 class="mb-3">Search for Books</h2>
 
@@ -51,7 +51,7 @@
                                     </a>
 
                                     <center>
-                                        <p class="text-dark">@Html.DisplayFor(modelitem => item.BookName)</p>
+                                        <p class="text-dark">@item.BookName</p>
                                     </center>
 
                                     @if (item.Quantity > 0)
@@ -74,7 +74,7 @@
                 </div>
 
                 <div>
-                    @Html.Partial("_Paginator")
+                    <partial name="_Paginator" />
                 </div>
             </div>
         </section>

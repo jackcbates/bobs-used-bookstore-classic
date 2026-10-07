@@ -5,7 +5,7 @@
 
 @{ ViewData["Title"] = "Offers"; }
 
-@Html.Partial("_MessageBanner")
+<partial name="_MessageBanner" />
 
 <div class="d-flex m-3">
     <h5 class="me-auto">Offers</h5>
@@ -16,34 +16,40 @@
         <form class="row row-cols-lg-auto g-3 align-items-center" method="get">
             <div class="col-12">
                 <label class="visually-hidden" for="NameFilterInput">Book name</label>
-                @Html.TextBoxFor(m => m.Filters.BookName, new { placeholder = "Book Name", @class = "form-control", @id = "NameFilterInput" })
+                <input asp-for="Filters.BookName" placeholder="Book Name" class="form-control" id="NameFilterInput" />
             </div>
 
             <div class="col-12">
                 <label class="visually-hidden" for="AuthorFilterInput">Author</label>
-                @Html.TextBoxFor(m => m.Filters.Author, new { placeholder = "Author", @class = "form-control", @id = "AuthorFilterInput" })
+                <input asp-for="Filters.Author" placeholder="Author" class="form-control" id="AuthorFilterInput" />
             </div>
 
             <div class="col-12">
                 <label class="visually-hidden" for="GenreFilter">Genre</label>
-                @Html.DropDownListFor(a => a.Filters.GenreId, Model.Genres, "All Genres", new { @class = "form-select" })
+                <select asp-for="Filters.GenreId" asp-items="Model.Genres" class="form-select">
+                    <option value="">All Genres</option>
+                </select>
             </div>
 
             <div class="col-12">
                 <label class="visually-hidden" for="ConditionFilter">Condition</label>
-                @Html.DropDownListFor(a => a.Filters.ConditionId, Model.BookConditions, "All Book Conditions", new { @class = "form-select" })
+                <select asp-for="Filters.ConditionId" asp-items="Model.BookConditions" class="form-select">
+                    <option value="">All Book Conditions</option>
+                </select>
             </div>
 
             <div class="col-12">
                 <label class="visually-hidden" for="OfferStatusSelect">Offer status</label>
-                @Html.EnumDropDownListFor(a => a.Filters.OfferStatus, "All Offer Statuses", new { @class = "form-select" })
+                <select asp-for="Filters.OfferStatus" asp-items="Html.GetEnumSelectList<Bookstore.Domain.Offers.OfferStatus>()" class="form-select">
+                    <option value="">All Offer Statuses</option>
+                </select>
             </div>
             <div class="col-12">
                 <button type="submit" class="btn btn-primary">Filter</button>
             </div>
 
             <div class="col-12">
-                @Html.ActionLink("Clear", "Index", new { controller = "Offers" }, new { @class = "btn btn-secondary" })
+                <a asp-area="Admin" asp-controller="Offers" asp-action="Index" class="btn btn-secondary">Clear</a>
             </div>
         </form>
     </div>
@@ -52,7 +58,7 @@
 <div class="card m-3">
     <div class="card-header">
         <div class="d-flex justify-content-end">
-            @Html.Partial("_Paginator", Model)
+            <partial name="_Paginator" model="Model" />
         </div>
     </div>
 
@@ -122,7 +128,7 @@
 
     <div class="card-footer">
         <div class="d-flex justify-content-end">
-            @Html.Partial("_Paginator", Model)
+            <partial name="_Paginator" model="Model" />
         </div>
     </div>
 </div>

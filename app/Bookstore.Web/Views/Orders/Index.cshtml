@@ -43,12 +43,11 @@
                         </td>
                         <td>
                             <div class="hstack gap-2">
-                                @Html.ActionLink("Details", "Details", "Orders", new { id = item.Id }, new { @class = "btn" })
+                                <a asp-controller="Orders" asp-action="Details" asp-route-id="@item.Id" class="btn">Details</a>
 
-                                @using (Html.BeginForm("Delete", "Orders", new { id = item.Id }))
-                                {
+                                <form asp-action="Delete" asp-controller="Orders" asp-route-id="@item.Id" method="post">
                                     <button type="submit" class="btn">Cancel</button>
-                                }
+                                </form>
                             </div>
                         </td>
                     </tr>

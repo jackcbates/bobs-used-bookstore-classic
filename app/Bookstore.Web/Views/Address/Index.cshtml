@@ -47,25 +47,25 @@
                                 {
                                     <tr>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.AddressLine1)
+                                            @item.AddressLine1
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.AddressLine2)
+                                            @item.AddressLine2
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.City)
+                                            @item.City
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.State)
+                                            @item.State
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.Country)
+                                            @item.Country
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.ZipCode)
+                                            @item.ZipCode
                                         </td>
                                         <td>
-                                            @Html.ActionLink("Edit", "Update", "Address", new { id = item.Id, returnUrl = Url.Action() }, null) |
+                                            <a asp-controller="Address" asp-action="Update" asp-route-id="@item.Id" asp-route-returnUrl="@Url.Action()">Edit</a> |
                                             <a href data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-addressId="@item.Id">Delete</a>
                                         </td>
                                     </tr>

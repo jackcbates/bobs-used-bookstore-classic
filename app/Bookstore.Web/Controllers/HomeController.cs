@@ -1,9 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
 ﻿using System.Diagnostics;
 using Bookstore.Web.ViewModel;
 using Bookstore.Domain.Books;
 using System.Threading.Tasks;
 using Bookstore.Web.ViewModel.Home;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Bookstore.Web.Controllers
 {
@@ -17,29 +19,29 @@ namespace Bookstore.Web.Controllers
             this.bookService = bookService;
         }
 
-        public async Task<ActionResult> Index()
+        public async Task<IActionResult> Index()
         {
             var books = await bookService.ListBestSellingBooksAsync(4);
 
             return View(new HomeIndexViewModel(books));
         }
 
-        public ActionResult Privacy()
+        public IActionResult Privacy()
         {
             return View();
         }
 
-        public ActionResult Search()
+        public IActionResult Search()
         {
             return RedirectToAction("Index", "Search");
         }
 
-        public ActionResult Cart()
+        public IActionResult Cart()
         {
             return RedirectToAction("Index", "ShoppingCart");
         }
 
-        public ActionResult Error()
+        public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id });
         }

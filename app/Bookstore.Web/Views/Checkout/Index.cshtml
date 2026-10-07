@@ -45,28 +45,28 @@
             {
                 <tr>
                     <td>
-                        @Html.RadioButtonFor(model => model.SelectedAddressId, address.Id)
+                        <input type="radio" asp-for="SelectedAddressId" value="@address.Id" />
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => address.AddressLine1)
+                        @address.AddressLine1
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => address.AddressLine2)
+                        @address.AddressLine2
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => address.City)
+                        @address.City
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => address.State)
+                        @address.State
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => address.Country)
+                        @address.Country
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => address.ZipCode)
+                        @address.ZipCode
                     </td>
                     <td>
-                        @Html.ActionLink("Edit", "Update", "Address", new { id = address.Id, returnUrl = Url.Action() }, null)
+                        <a asp-controller="Address" asp-action="Update" asp-route-id="@address.Id" asp-route-returnUrl="@Url.Action()">Edit</a>
                     </td>
                 </tr>
             }
@@ -86,7 +86,7 @@
 
     <div>
         <p style="text-align: center">
-            @Html.ActionLink("Add address", "Create", "Address", new { returnUrl = Url.Action() }, null)
+            <a asp-controller="Address" asp-action="Create" asp-route-returnUrl="@Url.Action()">Add address</a>
         </p>
     </div>
 
