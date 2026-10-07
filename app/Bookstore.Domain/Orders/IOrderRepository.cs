@@ -1,4 +1,5 @@
-﻿using Bookstore.Domain.Books;
+#nullable enable
+using Bookstore.Domain.Books;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -6,9 +7,9 @@ namespace Bookstore.Domain.Orders
 {
     public interface IOrderRepository
     {
-        Task<Order> GetAsync(int id);
+        Task<Order?> GetAsync(int id);
 
-        Task<Order> GetAsync(int id, string sub);
+        Task<Order?> GetAsync(int id, string sub);
 
         Task<IEnumerable<Book>> ListBestSellingBooksAsync(int count);
 
@@ -20,6 +21,6 @@ namespace Bookstore.Domain.Orders
 
         Task<OrderStatistics> GetStatisticsAsync();
 
-        Task SaveChangesAsync();        
+        Task SaveChangesAsync();
     }
 }

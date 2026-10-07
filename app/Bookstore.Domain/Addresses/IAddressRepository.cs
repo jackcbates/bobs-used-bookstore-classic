@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+#nullable enable
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Bookstore.Domain.Addresses
 {
     public interface IAddressRepository
     {
-        Task<Address> GetAsync(string sub, int id);
+        Task<Address?> GetAsync(string sub, int id);
 
         Task<IEnumerable<Address>> ListAsync(string sub);
 
