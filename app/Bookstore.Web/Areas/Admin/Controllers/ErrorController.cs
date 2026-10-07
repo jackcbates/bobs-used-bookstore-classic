@@ -7,7 +7,7 @@ namespace Bookstore.Web.Areas.Admin.Controllers
     [AllowAnonymous]
     public class ErrorController : AdminAreaControllerBase
     {
-        [Route("/Error/Index/{code:int}")]
+        [Route("/Admin/Error/Index/{code:int}")]
         public IActionResult Index(int code)
         {
             var exception = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
