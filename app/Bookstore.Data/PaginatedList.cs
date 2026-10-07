@@ -1,8 +1,9 @@
-﻿using System;
+#nullable enable
+using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Bookstore.Domain
 {
@@ -16,9 +17,9 @@ namespace Bookstore.Domain
 
         public int TotalPages { get; private set; }
 
-        private PaginatedList(){ }
+        private PaginatedList() { source = null!; }
 
-        public PaginatedList(IQueryable<T> source, int pageIndex, int pageSize) 
+        public PaginatedList(IQueryable<T> source, int pageIndex, int pageSize)
         {
             this.source = source;
             this.pageIndex = pageIndex;

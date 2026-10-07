@@ -1,12 +1,12 @@
-﻿using Amazon.Auth.AccessControlPolicy;
+#nullable enable
 using Bookstore.Domain;
 using Bookstore.Domain.Offers;
 using Bookstore.Domain.Orders;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Bookstore.Data.Repositories
 {
@@ -30,15 +30,15 @@ namespace Bookstore.Data.Repositories
                     PendingOffers = x.Count(y => y.OfferStatus == OfferStatus.PendingApproval),
                     OffersThisMonth = x.Count(y => y.CreatedOn >= startOfMonth),
                     OffersTotal = x.Count()
-                }).SingleOrDefaultAsync();
+                }).SingleOrDefaultAsync() ?? new OfferStatistics();
         }
 
         async Task IOfferRepository.AddAsync(Offer offer)
         {
-            await Task.Run(() => dbContext.Offer.Add(offer));
+            await dbContext.Offer.AddAsync(offer);
         }
 
-        Task<Offer> IOfferRepository.GetAsync(int id)
+        Task<Offer?> IOfferRepository.GetAsync(int id)
         {
             return dbContext.Offer.Include(x => x.Customer).SingleOrDefaultAsync(x => x.Id == id);
         }
@@ -72,11 +72,10 @@ namespace Bookstore.Data.Repositories
                 query = query.Where(x => x.OfferStatus == filters.OfferStatus);
             }
 
-            query = query.Include(x => x.Customer)
+            query = query
+                .Include(x => x.Customer)
                 .Include(x => x.Condition)
                 .Include(x => x.Genre);
-         
-                
 
             var result = new PaginatedList<Offer>(query, pageIndex, pageSize);
 

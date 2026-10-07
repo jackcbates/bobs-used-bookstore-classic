@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+#nullable enable
+using System.Threading.Tasks;
 
 namespace Bookstore.Domain.Carts
 {
@@ -6,7 +7,7 @@ namespace Bookstore.Domain.Carts
     {
         Task AddAsync(ShoppingCart shoppingCart);
 
-        Task<ShoppingCart> GetAsync(string correlationId);
+        Task<ShoppingCart?> GetAsync(string correlationId);
 
         Task SaveChangesAsync();
     }

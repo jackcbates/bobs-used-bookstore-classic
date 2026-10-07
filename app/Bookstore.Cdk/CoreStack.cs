@@ -107,6 +107,7 @@ public class CoreStack : Stack
             ViewerProtocolPolicy = ViewerProtocolPolicy.REDIRECT_TO_HTTPS
         };
 
+#pragma warning disable CS0618, CS0612 // CloudFrontWebDistribution is obsolete; use Distribution instead (out of scope for this migration)
         var distribution = new CloudFrontWebDistribution(this, "CloudFrontDistribution", distProps);
 
         _ = new StringParameter(this, "CloudFrontDistributionSSMParameter", new StringParameterProps
@@ -114,6 +115,7 @@ public class CoreStack : Stack
             ParameterName = $"/{Constants.AppName}/Files/CloudFrontDomain",
             StringValue = $"https://{distribution.DistributionDomainName}"
         });
+#pragma warning restore CS0618, CS0612
     }
 
     internal void CreateCognitoUserPool()

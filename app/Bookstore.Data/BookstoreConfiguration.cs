@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Configuration;
+using Microsoft.Extensions.Configuration;
 
 namespace BobsBookstoreClassic.Data
 {
@@ -10,25 +10,41 @@ namespace BobsBookstoreClassic.Data
 
         private static BookstoreConfiguration Instance => Lazy.Value;
 
-        private readonly Dictionary<string, string> _appSettings = new Dictionary<string, string>();
-        private readonly Dictionary<string, string> _connectionStrings = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _appSettings = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, string> _connectionStrings = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-        private BookstoreConfiguration()
+        private BookstoreConfiguration() { }
+
+        /// <summary>
+        /// Initialise from ASP.NET Core IConfiguration. Call once at startup from Program.cs.
+        /// </summary>
+        public static void Initialize(IConfiguration configuration)
         {
-            foreach (string key in ConfigurationManager.AppSettings)
+            foreach (var kvp in configuration.AsEnumerable())
             {
-                _appSettings[key] = ConfigurationManager.AppSettings[key];
+                if (kvp.Value == null) continue;
+                Instance._appSettings[kvp.Key] = kvp.Value;
+            }
 
-                if (Environment.GetEnvironmentVariable(key) != null)
+            // Load connection strings section
+            var connStrings = configuration.GetSection("ConnectionStrings");
+            if (connStrings != null)
+            {
+                foreach (var child in connStrings.GetChildren())
                 {
-                    _appSettings[key] = Environment.GetEnvironmentVariable(key);
+                    Instance._connectionStrings[child.Key] = child.Value ?? string.Empty;
                 }
             }
 
-            foreach (ConnectionStringSettings connectionStringSettings in ConfigurationManager.ConnectionStrings)
+            // Also apply environment variable overrides for keys that match appSettings
+            foreach (var key in Instance._appSettings.Keys)
             {
-                _connectionStrings[connectionStringSettings.Name] = connectionStringSettings.ConnectionString;
-
+                var envKey = key.Replace("/", "__").Replace(":", "__");
+                var envValue = Environment.GetEnvironmentVariable(envKey);
+                if (envValue != null)
+                {
+                    Instance._appSettings[key] = envValue;
+                }
             }
         }
 
@@ -39,13 +55,17 @@ namespace BobsBookstoreClassic.Data
 
         public static string GetSetting(string key)
         {
-            return Instance._appSettings[key];
+            if (Instance._appSettings.TryGetValue(key, out var value))
+                return value;
+
+            // Fallback: try environment variable
+            var envKey = key.Replace("/", "__").Replace(":", "__");
+            return Environment.GetEnvironmentVariable(envKey) ?? string.Empty;
         }
 
         public static T GetSetting<T>(string key)
         {
-            var value = Instance._appSettings[key];
-
+            var value = GetSetting(key);
             return (T)Convert.ChangeType(value, typeof(T));
         }
 
@@ -56,8 +76,9 @@ namespace BobsBookstoreClassic.Data
 
         public static string GetConnectionString(string key)
         {
-            return Instance._connectionStrings[key];
+            if (Instance._connectionStrings.TryGetValue(key, out var value))
+                return value;
+            return string.Empty;
         }
-
     }
 }

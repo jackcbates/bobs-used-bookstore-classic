@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+#nullable enable
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Bookstore.Domain.ReferenceData
@@ -9,7 +10,7 @@ namespace Bookstore.Domain.ReferenceData
 
         Task<IPaginatedList<ReferenceDataItem>> ListAsync(ReferenceDataFilters filters, int pageIndex, int pageSize);
 
-        Task<ReferenceDataItem> GetAsync(int id);
+        Task<ReferenceDataItem?> GetAsync(int id);
 
         Task AddAsync(ReferenceDataItem item);
 
