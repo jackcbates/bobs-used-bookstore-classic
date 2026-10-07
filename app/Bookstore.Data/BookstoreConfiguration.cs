@@ -1,6 +1,6 @@
-﻿using System;
+using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
-using System.Configuration;
 
 namespace BobsBookstoreClassic.Data
 {
@@ -10,25 +10,54 @@ namespace BobsBookstoreClassic.Data
 
         private static BookstoreConfiguration Instance => Lazy.Value;
 
-        private readonly Dictionary<string, string> _appSettings = new Dictionary<string, string>();
-        private readonly Dictionary<string, string> _connectionStrings = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _appSettings = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, string> _connectionStrings = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-        private BookstoreConfiguration()
+        private BookstoreConfiguration() { }
+
+        public static void Configure(IConfiguration configuration)
         {
-            foreach (string key in ConfigurationManager.AppSettings)
+            foreach (var child in configuration.GetChildren())
             {
-                _appSettings[key] = ConfigurationManager.AppSettings[key];
-
-                if (Environment.GetEnvironmentVariable(key) != null)
+                if (child.Key.Equals("ConnectionStrings", StringComparison.OrdinalIgnoreCase))
                 {
-                    _appSettings[key] = Environment.GetEnvironmentVariable(key);
+                    foreach (var cs in child.GetChildren())
+                    {
+                        Instance._connectionStrings[cs.Key] = cs.Value ?? string.Empty;
+                    }
+                }
+                else
+                {
+                    RecurseSection(child, string.Empty);
                 }
             }
 
-            foreach (ConnectionStringSettings connectionStringSettings in ConfigurationManager.ConnectionStrings)
+            foreach (var entry in Environment.GetEnvironmentVariables().Keys)
             {
-                _connectionStrings[connectionStringSettings.Name] = connectionStringSettings.ConnectionString;
+                var key = entry?.ToString() ?? string.Empty;
+                var value = Environment.GetEnvironmentVariable(key);
+                if (!string.IsNullOrEmpty(key) && value != null)
+                {
+                    Instance._appSettings[key] = value;
+                }
+            }
+        }
 
+        private static void RecurseSection(IConfigurationSection section, string prefix)
+        {
+            var children = section.GetChildren();
+            bool hasChildren = false;
+            foreach (var child in children)
+            {
+                hasChildren = true;
+                var childKey = string.IsNullOrEmpty(prefix) ? $"{section.Key}/{child.Key}" : $"{prefix}/{section.Key}/{child.Key}";
+                RecurseSection(child, string.IsNullOrEmpty(prefix) ? section.Key : $"{prefix}/{section.Key}");
+            }
+
+            if (!hasChildren && section.Value != null)
+            {
+                var fullKey = string.IsNullOrEmpty(prefix) ? section.Key : $"{prefix}/{section.Key}";
+                Instance._appSettings[fullKey] = section.Value;
             }
         }
 
@@ -39,13 +68,12 @@ namespace BobsBookstoreClassic.Data
 
         public static string GetSetting(string key)
         {
-            return Instance._appSettings[key];
+            return Instance._appSettings.TryGetValue(key, out var val) ? val : string.Empty;
         }
 
         public static T GetSetting<T>(string key)
         {
-            var value = Instance._appSettings[key];
-
+            var value = GetSetting(key);
             return (T)Convert.ChangeType(value, typeof(T));
         }
 
@@ -56,8 +84,7 @@ namespace BobsBookstoreClassic.Data
 
         public static string GetConnectionString(string key)
         {
-            return Instance._connectionStrings[key];
+            return Instance._connectionStrings.TryGetValue(key, out var val) ? val : string.Empty;
         }
-
     }
 }
