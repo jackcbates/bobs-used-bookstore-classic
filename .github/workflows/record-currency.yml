@@ -1,0 +1,19 @@
+# GitHub Actions workflow - repeats the commit-msg hook's record-currency check so that
+# --no-verify does not bypass it, and checks the WHOLE branch rather than one commit. One
+# register entry per piece of work is the right answer; one per commit is not.
+# Copy to .github/workflows/record-currency.yml. Make the check required in the ruleset for main.
+name: record-currency
+on:
+  pull_request:
+jobs:
+  record-currency:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0          # the check needs the merge base, not a shallow tip
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Register updated for this change
+        env:
+          BASE: ${{ github.base_ref }}
+        run: sh tools/record-currency.sh --range "origin/$BASE"
