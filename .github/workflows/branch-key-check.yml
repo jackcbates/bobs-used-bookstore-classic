@@ -1,0 +1,25 @@
+# GitHub Actions workflow - repeats the commit-msg hook so that --no-verify does not bypass it,
+# and checks the pull request title (handbook questions 1.8 and 3.2).
+# Copy to .github/workflows/branch-key-check.yml. Make the check required in the ruleset for main.
+name: branch-key-check
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+jobs:
+  branch-key:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Branch name and pull request title carry the AISDLC key
+        env:
+          BRANCH: ${{ github.head_ref }}
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          if printf '%s' "$BRANCH" | grep -qE '^(dependabot|claude|codex|copilot)/'; then
+            echo "Exempt tool-generated branch: $BRANCH"
+          elif ! printf '%s' "$BRANCH" | grep -qE '^(feat|fix|chore|docs|refactor|test)/AISDLC-[0-9]+-[a-z0-9-]+$'; then
+            echo "BLOCKED: branch '$BRANCH' does not match <type>/AISDLC-<n>-<slug>."; exit 1
+          fi
+          if ! printf '%s' "$TITLE" | grep -qE '^AISDLC-[0-9]+: '; then
+            echo "BLOCKED: the pull request title must start with the AISDLC key, for example 'AISDLC-42: Add S3 policy check'."; exit 1
+          fi
+          echo "Branch and title carry the AISDLC key."
